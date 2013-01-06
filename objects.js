@@ -1,3 +1,22 @@
+var MCP = {
+		background: null,
+		canvas: null,
+		pels: [],
+		lifes: 3,
+		lostOne: function(pel){
+			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
+			this.canvas.removeChild(pel);
+			
+			this.lifes--;
+			//background.fillStyle = '#cc0000';
+		},
+		spawnPel: function(){
+			var pel = new P3l(75, 50);
+			this.canvas.addChild(pel);
+			this.pels.push(pel);
+		}
+};
+
 var P3l = Cannon.Display.Circle.extend({
 	__construct: function(x, y){
 		this._super(false);

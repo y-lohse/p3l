@@ -2,8 +2,7 @@ Cannon.include('http://code.yannick-lohse.fr/cannon/1/display.js');
 Cannon.include('http://code.yannick-lohse.fr/cannon/1/misc.js');
 Cannon.include('http://code.yannick-lohse.fr/cannon/1/math.js');
 
-var canvas, background;
-var paddle, paddleCol = 0, pels = [];
+var paddle, paddleCol = 0;
 var GRAVITY = .4, 
 	GUTTER_WIDTH = 100;
 
@@ -11,11 +10,15 @@ Cannon.onReady = function(){
 	Cannon.Logger.autolog('logs');
 	Cannon.use('*');
 	
-	Cannon.getScript('objects.js', init);
+	Cannon.getScript('objects.js', function(){
+		MCP.background = background;
+		MCP.canvas = canvas;
+		MCP.spawnPel();
+	});
 	
-	canvas = new Cannon.Canvas('canvas');
+	var canvas = new Cannon.Canvas('canvas');
 	
-	background = new Rectangle(0, 0, canvas.width, canvas.height);
+	var background = new Rectangle(0, 0, canvas.width, canvas.height);
 	background.fillStyle = new Color(209, 210, 215);
 	canvas.addChild(background);
 	
@@ -42,9 +45,8 @@ Cannon.onReady = function(){
 
 function onRender(){
 	var removeMe = [];
-	
-	for (var i = 0; i < pels.length; i++){
-		var pel = pels[i];
+	for (var i = 0; i < MCP.pels.length; i++){
+		var pel = MCP.pels[i];
 		
 		pel.direction.y = pel.direction.y+GRAVITY;
 		
@@ -52,33 +54,18 @@ function onRender(){
 		pel.y += pel.direction.y;
 		
 		if (pel.y >= paddle.y){
-			pel.bounceOff(paddle.y);
-
-			if (pel.bounces === 4) removeMe.push(pel);
+			if (paddleCol === pel.bounces){			
+				pel.bounceOff(paddle.y);
+				if (pel.bounces === 4) removeMe.push(pel);
+			}
+			else {
+				
+				removeMe.push(pel);
+			}
 		}
 	}
 	
 	for (var i = 0; i < removeMe.length; i++){
-		pels = Cannon.Utils.arrayWithout(pels, removeMe[i]);
-		canvas.removeChild(removeMe[i]);
+		MCP.lostOne(removeMe[i]);
 	}
-}
-
-function predict(y, vectorY){
-	var counter = 0;
-	
-	do{
-		vectorY += GRAVITY;
-		y += vectorY;
-		counter++;
-	}
-	while(y < paddle.y);
-	
-	return counter;
-}
-
-function init(){
-	var pel = new P3l(75, 50);
-	canvas.addChild(pel);
-	pels.push(pel);
 }
