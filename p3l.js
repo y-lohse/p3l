@@ -32,7 +32,12 @@ Cannon.onReady = function(){
 	
 	canvas.on('canvas:render', onRender);
 	
-	
+	canvas.on('canvas:keydown', function(event){
+		if (event.key === 'right' && paddleCol < 2)
+			paddle.x = 25+GUTTER_WIDTH*++paddleCol;
+		else if (event.key === 'left' && paddleCol > 0)
+			paddle.x = 25+GUTTER_WIDTH*--paddleCol;
+	});
 };
 
 function onRender(){
