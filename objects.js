@@ -34,9 +34,11 @@ var P3l = Cannon.Display.Circle.extend({
 	},
 	bounceOff: function(limit){
 		this.bounces++;
+		this.y = limit;
 		
-		this.direction.y = Cannon.Math.Utils.randomIn(-19, -10);
-		this.direction.x = GUTTER_WIDTH/this.predict(this.y, this.direction.y, limit);
+		this.direction.y = Cannon.Math.Utils.randomIn(-13, -7);
+		if (this.bounces < 3) this.direction.x = GUTTER_WIDTH/this.predict(this.y, this.direction.y, limit);
+		else this.direction.x = 5;
 	},
 	predict: function(y, vy, limit){
 		var counter = 0;

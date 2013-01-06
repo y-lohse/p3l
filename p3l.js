@@ -3,7 +3,7 @@ Cannon.include('http://code.yannick-lohse.fr/cannon/1/misc.js');
 Cannon.include('http://code.yannick-lohse.fr/cannon/1/math.js');
 
 var paddle, paddleCol = 0;
-var GRAVITY = .4, 
+var GRAVITY = .2, 
 	GUTTER_WIDTH = 100;
 
 Cannon.onReady = function(){
@@ -48,7 +48,7 @@ function onRender(){
 	for (var i = 0; i < MCP.pels.length; i++){
 		var pel = MCP.pels[i];
 		
-		pel.direction.y = pel.direction.y+GRAVITY;
+		pel.direction.y += GRAVITY;
 		
 		pel.x += pel.direction.x;
 		pel.y += pel.direction.y;
