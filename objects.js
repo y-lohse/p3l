@@ -1,9 +1,10 @@
 var MCP = {
+		running: false,
 		background: null,
 		canvas: null,
 		pels: [],
 		lifes: 3,
-		bounceFactors: [-7, -9, -11, -13],
+		bounceFactors: [-7, -10, -13],
 		previousBounce: 0,
 		lostOne: function(pel){
 			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
@@ -17,14 +18,16 @@ var MCP = {
 			setTimeout(arguments.callee.caller, 2000);
 		},
 		spawnPel: function(){
-			var pel = new P3l(75, 50);
+			var pel = new P3l(-25, Cannon.Math.Utils.randomIn(25, 75));
+			pel.direction.x = GUTTER_WIDTH/pel.predict(pel.y, pel.direction.y, paddle.y);
+			
 			this.canvas.addChild(pel);
 			this.pels.push(pel);
 		},
 		getBounceFactor: function(){
 			var bounce;
 			do{
-				bounce = Math.floor(Cannon.Math.Utils.randomIn(0, this.bounceFactors.length-1));
+				bounce = Math.floor(Cannon.Math.Utils.randomIn(0, this.bounceFactors.length));
 			}
 			while(bounce === this.previousBounce);
 			

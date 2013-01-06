@@ -4,7 +4,8 @@ Cannon.include('http://code.yannick-lohse.fr/cannon/1/math.js');
 
 var paddle, paddleCol = 0;
 var GRAVITY = .2, 
-	GUTTER_WIDTH = 100;
+	GUTTER_WIDTH = 100,
+	PADDING = 25;
 
 Cannon.onReady = function(){
 	Cannon.Logger.autolog('logs');
@@ -13,7 +14,7 @@ Cannon.onReady = function(){
 	Cannon.getScript('objects.js', function(){
 		MCP.background = background;
 		MCP.canvas = canvas;
-		MCP.startSpawning();
+		//MCP.startSpawning();
 	});
 	
 	var canvas = new Cannon.Canvas('canvas');
@@ -33,13 +34,37 @@ Cannon.onReady = function(){
 	titleText.x = canvas.width/2 - titleText.getWidth()/2;
 	titleText.fillStyle = '#babbc1';
 	
+	var click = new DynamicText('click anywhere to start', 0, 300);
+	click.setFont('arial', 30, '');
+	canvas.addChild(click);
+	click.x = canvas.width/2 - click.getWidth()/2;
+	
+	var explain1 = new DynamicText("Don't let the PELs fall", 0, 170);
+	explain1.setFont('arial', 20, '');
+	canvas.addChild(explain1);
+	explain1.x = canvas.width/2 - explain1.getWidth()/2;
+	
+	var explain2 = new DynamicText("Use the arrow keys to move", 0, 200);
+	explain2.setFont('arial', 20, '');
+	canvas.addChild(explain2);
+	explain2.x = canvas.width/2 - explain2.getWidth()/2;
+	
 	canvas.on('canvas:render', onRender);
+	
+	canvas.on('canvas:click', function(){
+		if (!MCP.running){
+			MCP.running = true;
+			MCP.startSpawning();
+			
+			click.visible = explain1.visible = explain2.visible = false;
+		}
+	});
 	
 	canvas.on('canvas:keydown', function(event){
 		if (event.key === 'right' && paddleCol < 2)
-			paddle.x = 25+GUTTER_WIDTH*++paddleCol;
+			paddle.x = PADDING+GUTTER_WIDTH*++paddleCol;
 		else if (event.key === 'left' && paddleCol > 0)
-			paddle.x = 25+GUTTER_WIDTH*--paddleCol;
+			paddle.x = PADDING+GUTTER_WIDTH*--paddleCol;
 	});
 };
 
