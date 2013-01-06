@@ -14,7 +14,7 @@ Cannon.onReady = function(){
 	Cannon.getScript('objects.js', function(){
 		MCP.background = background;
 		MCP.canvas = canvas;
-		//MCP.startSpawning();
+		MCP.scoreText = scoreText;
 	});
 	
 	var canvas = new Cannon.Canvas('canvas');
@@ -33,6 +33,12 @@ Cannon.onReady = function(){
 	canvas.addChild(titleText);
 	titleText.x = canvas.width/2 - titleText.getWidth()/2;
 	titleText.fillStyle = '#babbc1';
+	
+	var scoreText = new DynamicText('0', 0, 200);
+	scoreText.setFont('arial', 100, '');
+	canvas.addChild(scoreText);
+	scoreText.x = canvas.width/2 - scoreText.getWidth()/2;
+	scoreText.fillStyle = '#babbc1';
 	
 	var click = new DynamicText('click anywhere to start', 0, 300);
 	click.setFont('arial', 30, '');
@@ -81,6 +87,7 @@ function onRender(){
 		if (pel.y >= paddle.y){
 			if (paddleCol === pel.bounces){			
 				pel.bounceOff(paddle.y);
+				MCP.bounced();
 				if (pel.bounces === 4) removeMe.push(pel);
 			}
 			else removeMe.push(pel);

@@ -2,10 +2,17 @@ var MCP = {
 		running: false,
 		background: null,
 		canvas: null,
+		scoreText: null,
 		pels: [],
 		lifes: 3,
+		level: 1,
+		score: 0,
 		bounceFactors: [-7, -10, -13],
 		previousBounce: 0,
+		bounced: function(){
+			this.score++;
+			this.scoreText.text = this.score;
+		},
 		lostOne: function(pel){
 			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
 			this.canvas.removeChild(pel);
@@ -15,7 +22,7 @@ var MCP = {
 		},
 		startSpawning: function(){
 			MCP.spawnPel();
-			setTimeout(arguments.callee.caller, 2000);
+			setTimeout(MCP.startSpawning, 2000);
 		},
 		spawnPel: function(){
 			var pel = new P3l(-25, Cannon.Math.Utils.randomIn(25, 75));
