@@ -17,9 +17,10 @@ var MCP = {
 			if (this.scoreText.getWidth() > this.canvas.width) this.scoreText.fontSize -= 5;
 			this.scoreText.x = this.canvas.width/2 - this.scoreText.getWidth()/2;
 		},
-		lostOne: function(pel){
-			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
-			this.canvas.removeChild(pel);
+		lostOne: function(){
+			Tween.create(this.background, {fillStyle: '#efafaf'}, 550, Cannon.Utils.bind(function(){
+				Tween.create(this.background, {fillStyle: '#d1d2d7'}, 550, 'easeOutQuint');
+			}, this), 'easeOutQuint');
 			
 			if (--this.lifes === 0){
 				clearTimeout(this.timeout);
@@ -29,6 +30,8 @@ var MCP = {
 		},
 		startSpawning: function(){
 			this.spawnPel();
+			//var nextPel = 
+			
 			this.timeout = setTimeout(Cannon.Utils.bind(this.startSpawning, this), 2000);
 		},
 		spawnPel: function(){
@@ -37,6 +40,10 @@ var MCP = {
 			
 			this.canvas.addChild(pel);
 			this.pels.push(pel);
+		},
+		removePel: function(pel){
+			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
+			this.canvas.removeChild(pel);
 		},
 		getBounceFactor: function(){
 			var bounce;
@@ -70,6 +77,7 @@ var P3l = Cannon.Display.Circle.extend({
 		else this.direction.x = 5;
 	},
 	predict: function(y, vy, limit){
+		//predicts the number of iterations before pel wil bounce again
 		var counter = 0;
 		
 		do{

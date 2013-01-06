@@ -2,7 +2,7 @@ Cannon.include('http://code.yannick-lohse.fr/cannon/1/display.js');
 Cannon.include('http://code.yannick-lohse.fr/cannon/1/misc.js');
 Cannon.include('http://code.yannick-lohse.fr/cannon/1/math.js');
 
-var paddle, paddleCol = 0;
+var canvas, paddle, paddleCol = 0;
 var GRAVITY = .2, 
 	GUTTER_WIDTH = 100,
 	PADDING = 25,
@@ -21,15 +21,24 @@ Cannon.onReady = function(){
 		canvas.on('canvas:render', onRender);
 	});
 	
-	var canvas = new Cannon.Canvas('canvas');
+	if (localStorage.getItem('highscore') == null) localStorage.setItem('highscore', 0);
+	
+	canvas = new Cannon.Canvas('canvas');
 	
 	var background = new Rectangle(0, 0, canvas.width, canvas.height);
 	background.fillStyle = new Color(209, 210, 215);
 	canvas.addChild(background);
+	background.fillStyle = new Color('#d1d2d7');
+	background.lineWidth = 0;
 	
 	var gradient = new RadialGradient(canvas.width/2);
-	gradient.addColorStop(0, '#e2e3e6').addColorStop(1, '#d1d2d7');
-	background.fillStyle = gradient;
+	gradient.addColorStop(0, '#e2e3e6').addColorStop(1, new Color(209, 210, 215, 0));
+	
+	var grad = new Rectangle(0, 0, canvas.width, canvas.height);
+	grad.fillStyle = new Color(209, 210, 215);
+	canvas.addChild(grad);
+	grad.fillStyle = gradient;
+	grad.lineWidth = 0;
 	
 	paddle = new Rectangle(25, canvas.height-20, 100, 10);
 	canvas.addChild(paddle);
@@ -67,6 +76,17 @@ Cannon.onReady = function(){
 	explain2.fillStyle = new Color(TEXT_COLOR);
 	explain2.x = canvas.width/2 - explain2.getWidth()/2;
 	
+	highscoreText = new DynamicText("Highscore : "+localStorage.getItem('highscore'), 0, 350);
+	highscoreText.setFont('arial', 20, '');
+	canvas.addChild(highscoreText);
+	highscoreText.fillStyle = new Color(TEXT_COLOR);
+	highscoreText.x = canvas.width/2 - highscoreText.getWidth()/2;
+
+	lastscore = new DynamicText("Last game : 0", 0, 380);
+	lastscore.setFont('arial', 20, '');
+	canvas.addChild(lastscore);
+	lastscore.fillStyle = new Color(0,0,0,0);
+	
 	canvas.on('canvas:click', function(){
 		if (!MCP.running){
 			startGame()
@@ -82,19 +102,39 @@ Cannon.onReady = function(){
 };
 
 function startGame(){
+	MCP.level = 1;
+	MCP.score = 0;
+	MCP.lifes = 3;
 	MCP.running = true;
 	MCP.startSpawning();
 	
 	var transparent = new Color(0,0,0,0);
 	
-	Tween.create(click, {fillStyle: transparent}, 500);titleText
+	Tween.create(click, {fillStyle: transparent}, 500);
 	Tween.create(explain1, {fillStyle: transparent}, 500);
 	Tween.create(explain2, {fillStyle: transparent}, 500);
+	Tween.create(highscoreText, {fillStyle: transparent}, 500);
+	Tween.create(lastscore, {fillStyle: transparent}, 500);
 	Tween.create(titleText, {fillStyle: FADED_COLOR}, 500);
 	Tween.create(scoreText, {fillStyle: FADED_COLOR}, 500);
 }
 
-function endGame(){
+function endGame(score){
+	if (localStorage.getItem('highscore') < score) localStorage.setItem('highscore', score);
+	
+	highscoreText.text = 'Highscore: '+localStorage.getItem('highscore');
+	lastscore.text = 'Last game : '+score;
+	
+	highscoreText.x = canvas.width/2 - highscoreText.getWidth()/2;
+	lastscore.x = canvas.width/2 - lastscore.getWidth()/2;
+	
+	Tween.create(click, {fillStyle: TEXT_COLOR}, 500);titleText
+	Tween.create(explain1, {fillStyle: TEXT_COLOR}, 500);
+	Tween.create(explain2, {fillStyle: TEXT_COLOR}, 500);
+	Tween.create(titleText, {fillStyle: TEXT_COLOR}, 500);
+	Tween.create(highscoreText, {fillStyle: TEXT_COLOR}, 500);
+	Tween.create(lastscore, {fillStyle: TEXT_COLOR}, 500);
+	Tween.create(scoreText, {fillStyle: new Color(0,0,0,0)}, 500);
 }
 
 function onRender(){
@@ -108,16 +148,28 @@ function onRender(){
 		pel.y += pel.direction.y;
 		
 		if (pel.y >= paddle.y){
-			if (paddleCol === pel.bounces){			
+			if (paddleCol === pel.bounces && pel.bounces < 3){
+				//bounces off paddle
 				pel.bounceOff(paddle.y);
 				MCP.bounced();
-				if (pel.bounces === 4) removeMe.push(pel);
+				
+				Tween.create(paddle, {fillStyle: '#828389', strokeStyle: '#828389'}, 250, function(){
+					Tween.create(paddle, {fillStyle: '#4e4f53', strokeStyle: '#4e4f53'}, 250, 'easeOutQuint');
+				}, 'easeOutQuint');
 			}
-			else removeMe.push(pel);
+			else if (pel.bounces < 3){
+				//really lost a pel
+				MCP.lostOne();
+				removeMe.push(pel);
+			}
+			else {
+				//pel is away
+				removeMe.push(pel);
+			}
 		}
 	}
 	
 	for (var i = 0; i < removeMe.length; i++){
-		MCP.lostOne(removeMe[i]);
+		MCP.removePel(removeMe[i]);
 	}
 }
