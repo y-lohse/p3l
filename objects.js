@@ -21,12 +21,10 @@ var MCP = {
 			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
 			this.canvas.removeChild(pel);
 			
-			//background.fillStyle = '#cc0000';
-			
 			if (--this.lifes === 0){
 				clearTimeout(this.timeout);
-				this.runinng = false;
-				endGame();
+				this.running = false;
+				endGame(this.score);
 			}
 		},
 		startSpawning: function(){
