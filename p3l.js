@@ -6,6 +6,7 @@ var canvas, paddle, paddleCol = 0;
 var GRAVITY = .2, 
 	GUTTER_WIDTH = 100,
 	PADDING = 25,
+	PEL_MAX_SPEED = 7,
 	TEXT_COLOR = '#76777d',
 	FADED_COLOR = '#babbc1';
 
@@ -142,7 +143,7 @@ function onRender(){
 	for (var i = 0; i < MCP.pels.length; i++){
 		var pel = MCP.pels[i];
 		
-		pel.direction.y += GRAVITY;
+		pel.direction.y = Math.min(pel.direction.y+GRAVITY, PEL_MAX_SPEED);
 		
 		pel.x += pel.direction.x;
 		pel.y += pel.direction.y;

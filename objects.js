@@ -7,11 +7,15 @@ var MCP = {
 		lifes: 3,
 		level: 1,
 		score: 0,
+		bounces: 0,
 		bounceFactors: [-7, -10, -13],
 		previousBounce: 0,
 		timeout: null,
 		bounced: function(){
-			this.score += this.level;
+			this.bounces++;
+			this.level++;
+			
+			this.score += 1;
 			this.scoreText.text = this.score;
 			
 			if (this.scoreText.getWidth() > this.canvas.width) this.scoreText.fontSize -= 5;
@@ -30,12 +34,12 @@ var MCP = {
 		},
 		startSpawning: function(){
 			this.spawnPel();
-			//var nextPel = 
+			var nextPel = Math.max((-5500/19 * (this.level-1) + 7000), 1500);
 			
-			this.timeout = setTimeout(Cannon.Utils.bind(this.startSpawning, this), 2000);
+			this.timeout = setTimeout(Cannon.Utils.bind(this.startSpawning, this), nextPel);
 		},
 		spawnPel: function(){
-			var pel = new P3l(-25, Cannon.Math.Utils.randomIn(25, 75));
+			var pel = new P3l(-25, 20);
 			pel.direction.x = GUTTER_WIDTH/pel.predict(pel.y, pel.direction.y, paddle.y);
 			
 			this.canvas.addChild(pel);
@@ -81,7 +85,7 @@ var P3l = Cannon.Display.Circle.extend({
 		var counter = 0;
 		
 		do{
-			vy += GRAVITY;
+			vy = Math.min(vy+GRAVITY, PEL_MAX_SPEED);
 			y += vy;
 			counter++;
 		}
