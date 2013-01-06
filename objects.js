@@ -3,6 +3,8 @@ var MCP = {
 		canvas: null,
 		pels: [],
 		lifes: 3,
+		bounceFactors: [-7, -9, -11, -13],
+		previousBounce: 0,
 		lostOne: function(pel){
 			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
 			this.canvas.removeChild(pel);
@@ -18,6 +20,16 @@ var MCP = {
 			var pel = new P3l(75, 50);
 			this.canvas.addChild(pel);
 			this.pels.push(pel);
+		},
+		getBounceFactor: function(){
+			var bounce;
+			do{
+				bounce = Math.floor(Cannon.Math.Utils.randomIn(0, this.bounceFactors.length-1));
+			}
+			while(bounce === this.previousBounce);
+			
+			this.previousBounce = bounce;
+			return this.bounceFactors[bounce];
 		}
 };
 
@@ -36,7 +48,7 @@ var P3l = Cannon.Display.Circle.extend({
 		this.bounces++;
 		this.y = limit;
 		
-		this.direction.y = Cannon.Math.Utils.randomIn(-13, -7);
+		this.direction.y = MCP.getBounceFactor();
 		if (this.bounces < 3) this.direction.x = GUTTER_WIDTH/this.predict(this.y, this.direction.y, limit);
 		else this.direction.x = 5;
 	},
