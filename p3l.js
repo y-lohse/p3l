@@ -13,7 +13,7 @@ Cannon.onReady = function(){
 	Cannon.getScript('objects.js', function(){
 		MCP.background = background;
 		MCP.canvas = canvas;
-		MCP.spawnPel();
+		MCP.startSpawning();
 	});
 	
 	var canvas = new Cannon.Canvas('canvas');
@@ -58,10 +58,7 @@ function onRender(){
 				pel.bounceOff(paddle.y);
 				if (pel.bounces === 4) removeMe.push(pel);
 			}
-			else {
-				
-				removeMe.push(pel);
-			}
+			else removeMe.push(pel);
 		}
 	}
 	

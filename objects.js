@@ -10,6 +10,10 @@ var MCP = {
 			this.lifes--;
 			//background.fillStyle = '#cc0000';
 		},
+		startSpawning: function(){
+			MCP.spawnPel();
+			setTimeout(arguments.callee.caller, 2000);
+		},
 		spawnPel: function(){
 			var pel = new P3l(75, 50);
 			this.canvas.addChild(pel);
