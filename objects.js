@@ -9,20 +9,29 @@ var MCP = {
 		score: 0,
 		bounceFactors: [-7, -10, -13],
 		previousBounce: 0,
+		timeout: null,
 		bounced: function(){
-			this.score++;
+			this.score += this.level;
 			this.scoreText.text = this.score;
+			
+			if (this.scoreText.getWidth() > this.canvas.width) this.scoreText.fontSize -= 5;
+			this.scoreText.x = this.canvas.width/2 - this.scoreText.getWidth()/2;
 		},
 		lostOne: function(pel){
 			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
 			this.canvas.removeChild(pel);
 			
-			this.lifes--;
 			//background.fillStyle = '#cc0000';
+			
+			if (--this.lifes === 0){
+				clearTimeout(this.timeout);
+				this.runinng = false;
+				endGame();
+			}
 		},
 		startSpawning: function(){
-			MCP.spawnPel();
-			setTimeout(MCP.startSpawning, 2000);
+			this.spawnPel();
+			this.timeout = setTimeout(Cannon.Utils.bind(this.startSpawning, this), 2000);
 		},
 		spawnPel: function(){
 			var pel = new P3l(-25, Cannon.Math.Utils.randomIn(25, 75));

@@ -34,23 +34,24 @@ Cannon.onReady = function(){
 	titleText.x = canvas.width/2 - titleText.getWidth()/2;
 	titleText.fillStyle = '#babbc1';
 	
-	var scoreText = new DynamicText('0', 0, 200);
-	scoreText.setFont('arial', 100, '');
+	scoreText = new DynamicText('0', 0, 200);
+	scoreText.setFont('arial', 90, '');
 	canvas.addChild(scoreText);
 	scoreText.x = canvas.width/2 - scoreText.getWidth()/2;
 	scoreText.fillStyle = '#babbc1';
+	scoreText.visible = false;
 	
-	var click = new DynamicText('click anywhere to start', 0, 300);
+	click = new DynamicText('click anywhere to start', 0, 300);
 	click.setFont('arial', 30, '');
 	canvas.addChild(click);
 	click.x = canvas.width/2 - click.getWidth()/2;
 	
-	var explain1 = new DynamicText("Don't let the PELs fall", 0, 170);
+	explain1 = new DynamicText("Don't let the PELs fall", 0, 170);
 	explain1.setFont('arial', 20, '');
 	canvas.addChild(explain1);
 	explain1.x = canvas.width/2 - explain1.getWidth()/2;
 	
-	var explain2 = new DynamicText("Use the arrow keys to move", 0, 200);
+	explain2 = new DynamicText("Use the arrow keys to move", 0, 200);
 	explain2.setFont('arial', 20, '');
 	canvas.addChild(explain2);
 	explain2.x = canvas.width/2 - explain2.getWidth()/2;
@@ -59,10 +60,7 @@ Cannon.onReady = function(){
 	
 	canvas.on('canvas:click', function(){
 		if (!MCP.running){
-			MCP.running = true;
-			MCP.startSpawning();
-			
-			click.visible = explain1.visible = explain2.visible = false;
+			startGame()
 		}
 	});
 	
@@ -73,6 +71,19 @@ Cannon.onReady = function(){
 			paddle.x = PADDING+GUTTER_WIDTH*--paddleCol;
 	});
 };
+
+function startGame(){
+	MCP.running = true;
+	MCP.startSpawning();
+	
+	click.visible = explain1.visible = explain2.visible = false;
+	scoreText.visible = true;
+}
+
+function endGame(){
+	click.visible = explain1.visible = explain2.visible = true;
+	scoreText.visible = false;
+}
 
 function onRender(){
 	var removeMe = [];
