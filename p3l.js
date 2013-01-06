@@ -3,7 +3,7 @@ Cannon.include('http://code.yannick-lohse.fr/cannon/1/misc.js');
 Cannon.include('http://code.yannick-lohse.fr/cannon/1/math.js');
 
 var canvas, background;
-var paddle, pels = [];
+var paddle, paddleCol = 0, pels = [];
 var GRAVITY = .4, 
 	GUTTER_WIDTH = 100;
 
@@ -31,21 +31,31 @@ Cannon.onReady = function(){
 	titleText.fillStyle = '#babbc1';
 	
 	canvas.on('canvas:render', onRender);
+	
+	
 };
 
 function onRender(){
+	var removeMe = [];
+	
 	for (var i = 0; i < pels.length; i++){
 		var pel = pels[i];
 		
 		pel.direction.y = pel.direction.y+GRAVITY;
-		//pel.direction.y = Math.min(pel.direction.y+GRAVITY, PEL_MAX_SPEED);
 		
 		pel.x += pel.direction.x;
 		pel.y += pel.direction.y;
 		
 		if (pel.y >= paddle.y){
-			pel.bounceOff();
+			pel.bounceOff(paddle.y);
+
+			if (pel.bounces === 4) removeMe.push(pel);
 		}
+	}
+	
+	for (var i = 0; i < removeMe.length; i++){
+		pels = Cannon.Utils.arrayWithout(pels, removeMe[i]);
+		canvas.removeChild(removeMe[i]);
 	}
 }
 

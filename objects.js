@@ -9,13 +9,13 @@ var P3l = Cannon.Display.Circle.extend({
 		
 		this.direction= new Vector2D(0, 0);
 	},
-	bounceOff: function(){
+	bounceOff: function(limit){
 		this.bounces++;
 		
 		this.direction.y = Cannon.Math.Utils.randomIn(-19, -10);
-		this.direction.x = GUTTER_WIDTH/this.predict(this.y, this.direction.y);
+		this.direction.x = GUTTER_WIDTH/this.predict(this.y, this.direction.y, limit);
 	},
-	predict: function(y, vy){
+	predict: function(y, vy, limit){
 		var counter = 0;
 		
 		do{
@@ -23,7 +23,7 @@ var P3l = Cannon.Display.Circle.extend({
 			y += vy;
 			counter++;
 		}
-		while(y < paddle.y);
+		while(y < limit);
 		
 		return counter;
 	}
