@@ -43,13 +43,18 @@ var MCP = {
 		},
 		spawnPel: function(){
 			var pel = new P3l(-25, 20);
+			
 			pel.direction.x = GUTTER_WIDTH/this.predict(pel.y, pel.direction.y, paddle.y);
 			pel.nextBounce = this.predict(pel.y, pel.direction.y, paddle.y);
 			
-			Cannon.Logger.log(this.getNextBounce());
-			
-			this.canvas.addChild(pel);
-			this.pels.push(pel);
+			var next = Math.abs(pel.nextBounce-this.getNextBounce());
+			if (next != Infinity && next < 30){
+				Cannon.Logger.log('Refused spawn : '+next);
+			}
+			else {
+				this.canvas.addChild(pel);
+				this.pels.push(pel);
+			}
 		},
 		removePel: function(pel){
 			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
@@ -73,6 +78,8 @@ var MCP = {
 				pel.direction.x = 5;
 				pel.nextBounce = Infinity;
 			}
+			
+			//if (this.getNextBounce()-pel.nextBounce != 0) Cannon.Logger.log('Next bounce : '+(this.getNextBounce()-pel.nextBounce));
 		},
 		predict: function(y, vy, limit){
 			//predicts the number of iterations before pel wil bounce again
