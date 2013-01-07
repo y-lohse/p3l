@@ -155,8 +155,7 @@ function endGame(score){
 	for (var i = 0; i < MCP.lifesObjects.length; i++) MCP.lifesObjects[i].visible = false;
 	
 	while (MCP.pels.length-1 > 0){//last pel will be removed later
-		Cannon.Logger.log(MCP.pels);
-		MCP.removePel(MCP.pels[0]);
+		MCP.removePel(MCP.pels[1]);
 	}
 }
 
