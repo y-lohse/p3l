@@ -5,6 +5,7 @@ var MCP = {
 		scoreText: null,
 		pels: [],
 		lifes: 3,
+		lifesObjects: [],
 		level: 1,
 		score: 0,
 		bounces: 0,
@@ -25,6 +26,8 @@ var MCP = {
 			Tween.create(this.background, {fillStyle: '#efafaf'}, 550, Cannon.Utils.bind(function(){
 				Tween.create(this.background, {fillStyle: '#d1d2d7'}, 550, 'easeOutQuint');
 			}, this), 'easeOutQuint');
+			
+			this.lifesObjects[this.lifes-1].visible = false;
 			
 			if (--this.lifes === 0){
 				clearTimeout(this.timeout);

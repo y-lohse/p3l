@@ -18,6 +18,9 @@ Cannon.onReady = function(){
 		MCP.background = background;
 		MCP.canvas = canvas;
 		MCP.scoreText = scoreText;
+		MCP.lifesObjects.push(l1);
+		MCP.lifesObjects.push(l2);
+		MCP.lifesObjects.push(l3);
 		
 		canvas.on('canvas:render', onRender);
 	});
@@ -45,6 +48,16 @@ Cannon.onReady = function(){
 	canvas.addChild(paddle);
 	paddle.fillStyle = '#4e4f53';
 	paddle.strokeStyle = '#4e4f53';
+	
+	var l1 = new Circle(canvas.width/2-40, 170, 10);
+	canvas.addChild(l1);
+	var l2 = new Circle(canvas.width/2, 170, 10);
+	canvas.addChild(l2);
+	var l3 = new Circle(canvas.width/2+40, 170, 10);
+	canvas.addChild(l3);
+	l1.fillStyle = l2.fillStyle = l3.fillStyle = FADED_COLOR;
+	l1.strokeStyle = l2.strokeStyle = l3.strokeStyle = FADED_COLOR;
+	l1.visible = l2.visible = l3.visible = false;
 	
 	titleText = new DynamicText('p3l', 0, 50);
 	titleText.setFont('arial', 80, '');
@@ -118,6 +131,8 @@ function startGame(){
 	Tween.create(lastscore, {fillStyle: transparent}, 500);
 	Tween.create(titleText, {fillStyle: FADED_COLOR}, 500);
 	Tween.create(scoreText, {fillStyle: FADED_COLOR}, 500);
+	
+	for (var i = 0; i < MCP.lifesObjects.length; i++) MCP.lifesObjects[i].visible = true;
 }
 
 function endGame(score){
@@ -136,6 +151,13 @@ function endGame(score){
 	Tween.create(highscoreText, {fillStyle: TEXT_COLOR}, 500);
 	Tween.create(lastscore, {fillStyle: TEXT_COLOR}, 500);
 	Tween.create(scoreText, {fillStyle: new Color(0,0,0,0)}, 500);
+	
+	for (var i = 0; i < MCP.lifesObjects.length; i++) MCP.lifesObjects[i].visible = false;
+	
+	while (MCP.pels.length-1 > 0){//last pel will be removed later
+		Cannon.Logger.log(MCP.pels);
+		MCP.removePel(MCP.pels[0]);
+	}
 }
 
 function onRender(){
