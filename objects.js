@@ -61,15 +61,15 @@ var MCP = {
 			this.canvas.removeChild(pel);
 		},
 		setBounceFactor: function(pel){
-			var bounce;
+			var bounce = -7;
 			do{
-				bounce = Math.floor(Cannon.Math.Utils.randomIn(0, this.bounceFactors.length));
+				bounce = Cannon.Math.Utils.randomIn(-13, -7);
 			}
-			while(bounce === this.previousBounce);
+			while(Math.abs(this.getNextBounce()-this.predict(pel.y, bounce, pel.y)) < 30);
 			
 			this.previousBounce = bounce;
 			
-			pel.direction.y = this.bounceFactors[bounce];
+			pel.direction.y = bounce;
 			if (pel.bounces < 3) {
 				pel.direction.x = GUTTER_WIDTH/this.predict(pel.y, pel.direction.y, pel.y);
 				pel.nextBounce = this.predict(pel.y, pel.direction.y, pel.y);
