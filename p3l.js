@@ -164,6 +164,7 @@ function onRender(){
 	var removeMe = [];
 	for (var i = 0; i < MCP.pels.length; i++){
 		var pel = MCP.pels[i];
+		pel.nextBounce--;
 		
 		pel.direction.y = Math.min(pel.direction.y+GRAVITY, PEL_MAX_SPEED);
 		

@@ -43,7 +43,10 @@ var MCP = {
 		},
 		spawnPel: function(){
 			var pel = new P3l(-25, 20);
-			pel.direction.x = GUTTER_WIDTH/pel.predict(pel.y, pel.direction.y, paddle.y);
+			pel.direction.x = GUTTER_WIDTH/this.predict(pel.y, pel.direction.y, paddle.y);
+			pel.nextBounce = this.predict(pel.y, pel.direction.y, paddle.y);
+			
+			Cannon.Logger.log(this.getNextBounce());
 			
 			this.canvas.addChild(pel);
 			this.pels.push(pel);
@@ -52,7 +55,7 @@ var MCP = {
 			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
 			this.canvas.removeChild(pel);
 		},
-		getBounceFactor: function(){
+		setBounceFactor: function(pel){
 			var bounce;
 			do{
 				bounce = Math.floor(Cannon.Math.Utils.randomIn(0, this.bounceFactors.length));
@@ -60,7 +63,38 @@ var MCP = {
 			while(bounce === this.previousBounce);
 			
 			this.previousBounce = bounce;
-			return this.bounceFactors[bounce];
+			
+			pel.direction.y = this.bounceFactors[bounce];
+			if (pel.bounces < 3) {
+				pel.direction.x = GUTTER_WIDTH/this.predict(pel.y, pel.direction.y, pel.y);
+				pel.nextBounce = this.predict(pel.y, pel.direction.y, pel.y);
+			}
+			else {
+				pel.direction.x = 5;
+				pel.nextBounce = Infinity;
+			}
+		},
+		predict: function(y, vy, limit){
+			//predicts the number of iterations before pel wil bounce again
+			var counter = 0;
+			
+			do{
+				vy = Math.min(vy+GRAVITY, PEL_MAX_SPEED);
+				y += vy;
+				counter++;
+			}
+			while(y < limit);
+			
+			return counter;
+		},
+		getNextBounce: function(){
+			var next = Infinity;
+			
+			for (var i = 0; i < this.pels.length; i++){
+				if (this.pels[i].nextBounce < next) next = this.pels[i].nextBounce;
+			}
+			
+			return next;
 		}
 };
 
@@ -72,6 +106,7 @@ var P3l = Cannon.Display.Circle.extend({
 		this.radius = 5;
 		
 		this.bounces = 0;
+		this.nextBounce = 0;
 		
 		this.direction= new Vector2D(0, 0);
 	},
@@ -79,21 +114,6 @@ var P3l = Cannon.Display.Circle.extend({
 		this.bounces++;
 		this.y = limit;
 		
-		this.direction.y = MCP.getBounceFactor();
-		if (this.bounces < 3) this.direction.x = GUTTER_WIDTH/this.predict(this.y, this.direction.y, limit);
-		else this.direction.x = 5;
+		MCP.setBounceFactor(this);
 	},
-	predict: function(y, vy, limit){
-		//predicts the number of iterations before pel wil bounce again
-		var counter = 0;
-		
-		do{
-			vy = Math.min(vy+GRAVITY, PEL_MAX_SPEED);
-			y += vy;
-			counter++;
-		}
-		while(y < limit);
-		
-		return counter;
-	}
 });
