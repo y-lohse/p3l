@@ -50,7 +50,7 @@ var MCP = {
 			}
 			while (this.conflicts(pel));
 			
-			pel.direction.x = GUTTER_WIDTH/this.predict(pel.y, pel.direction.y, paddle.y);
+			pel.direction.x = GUTTER_WIDTH/pel.nextBounce;
 			
 			this.canvas.addChild(pel);
 			this.pels.push(pel);
@@ -71,7 +71,6 @@ var MCP = {
 			pel.direction.y = bounce;
 			if (pel.bounces < 3) {
 				pel.direction.x = GUTTER_WIDTH/this.predict(pel.y, pel.direction.y, pel.y);
-				pel.nextBounce = this.predict(pel.y, pel.direction.y, pel.y);
 			}
 			else {
 				pel.direction.x = 5;
@@ -102,17 +101,6 @@ var MCP = {
 			
 			return counter;
 		},
-		getNextBounce: function(without){
-			var next = Infinity;
-			var pels = Cannon.Utils.cloneArray(this.pels);
-			if (!Cannon.Utils.isUndefined(without)) pels = Cannon.Utils.arrayWithout(pels, without);
-			
-			for (var i = 0; i < pels.length; i++){
-				if (pels[i].nextBounce < next) next = pels[i].nextBounce;
-			}
-			
-			return next;
-		}
 };
 
 var P3l = Cannon.Display.Circle.extend({
