@@ -42,31 +42,35 @@ var MCP = {
 			this.timeout = setTimeout(Cannon.Utils.bind(this.startSpawning, this), nextPel);
 		},
 		spawnPel: function(){
-			var pel = new P3l(-25, 20);
+			var pel = new P3l(-25, 100);
+			var next;
+			
+			do{
+				pel.y -= 10;
+				pel.nextBounce = this.predict(pel.y, pel.direction.y, paddle.y);
+				next = Math.abs(pel.nextBounce-this.getNextBounce());
+			}
+			while (next != Infinity && next < 50);
+			Cannon.Logger.log('Spawn : '+next);
 			
 			pel.direction.x = GUTTER_WIDTH/this.predict(pel.y, pel.direction.y, paddle.y);
-			pel.nextBounce = this.predict(pel.y, pel.direction.y, paddle.y);
 			
-			var next = Math.abs(pel.nextBounce-this.getNextBounce());
-			if (next != Infinity && next < 30){
-				Cannon.Logger.log('Refused spawn : '+next);
-			}
-			else {
-				this.canvas.addChild(pel);
-				this.pels.push(pel);
-			}
+			this.canvas.addChild(pel);
+			this.pels.push(pel);
 		},
 		removePel: function(pel){
 			this.pels = Cannon.Utils.arrayWithout(this.pels, pel);
 			this.canvas.removeChild(pel);
 		},
 		setBounceFactor: function(pel){
-			var bounce = -7;
+			var bounce;
 			do{
 				bounce = Cannon.Math.Utils.randomIn(-13, -7);
+				pel.nextBounce = this.predict(pel.y, bounce, pel.y);
 			}
-			while(Math.abs(this.getNextBounce()-this.predict(pel.y, bounce, pel.y)) < 30);
+			while(Math.abs(this.getNextBounce(pel)-this.predict(pel.y, bounce, pel.y)) < 50);
 			
+			Cannon.Logger.log('Bounce : '+Math.abs(this.getNextBounce(pel)-this.predict(pel.y, bounce, pel.y)));
 			this.previousBounce = bounce;
 			
 			pel.direction.y = bounce;
@@ -94,11 +98,13 @@ var MCP = {
 			
 			return counter;
 		},
-		getNextBounce: function(){
+		getNextBounce: function(without){
 			var next = Infinity;
+			var pels = Cannon.Utils.cloneArray(this.pels);
+			if (!Cannon.Utils.isUndefined(without)) pels = Cannon.Utils.arrayWithout(pels, without);
 			
-			for (var i = 0; i < this.pels.length; i++){
-				if (this.pels[i].nextBounce < next) next = this.pels[i].nextBounce;
+			for (var i = 0; i < pels.length; i++){
+				if (pels[i].nextBounce < next) next = pels[i].nextBounce;
 			}
 			
 			return next;
