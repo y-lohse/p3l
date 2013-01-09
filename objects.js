@@ -60,12 +60,13 @@ var MCP = {
 			this.canvas.removeChild(pel);
 		},
 		setBounceFactor: function(pel){
-			var bounce = -6;
+			var bounce;
+			var counter = 0;
 			do{
-				bounce--;
+				bounce = Cannon.Math.Utils.randomIn(-13, -7);
 				pel.nextBounce = this.predict(pel.y, bounce, pel.y);
 			}
-			while(this.conflicts(pel));
+			while(this.conflicts(pel) && ++counter < 200);
 			
 			pel.direction.y = bounce;
 			if (pel.bounces < 3) {
@@ -83,7 +84,7 @@ var MCP = {
 			pels = Cannon.Utils.arrayWithout(pels, pel);
 			
 			for (var i = 0; i < pels.length; i++){
-				if (Math.abs(pels[i].nextBounce-pel.nextBounce) < 50) return true;
+				if (Math.abs(pels[i].nextBounce-pel.nextBounce) < 30) return true;
 			}
 			
 			return false;
