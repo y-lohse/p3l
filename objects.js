@@ -43,15 +43,12 @@ var MCP = {
 		},
 		spawnPel: function(){
 			var pel = new P3l(-25, 100);
-			var next;
 			
 			do{
 				pel.y -= 10;
 				pel.nextBounce = this.predict(pel.y, pel.direction.y, paddle.y);
-				next = Math.abs(pel.nextBounce-this.getNextBounce());
 			}
-			while (next != Infinity && next < 50);
-			Cannon.Logger.log('Spawn : '+next);
+			while (this.conflicts(pel));
 			
 			pel.direction.x = GUTTER_WIDTH/this.predict(pel.y, pel.direction.y, paddle.y);
 			
@@ -63,15 +60,12 @@ var MCP = {
 			this.canvas.removeChild(pel);
 		},
 		setBounceFactor: function(pel){
-			var bounce;
+			var bounce = -6;
 			do{
-				bounce = Cannon.Math.Utils.randomIn(-13, -7);
+				bounce--;
 				pel.nextBounce = this.predict(pel.y, bounce, pel.y);
 			}
-			while(Math.abs(this.getNextBounce(pel)-this.predict(pel.y, bounce, pel.y)) < 50);
-			
-			Cannon.Logger.log('Bounce : '+Math.abs(this.getNextBounce(pel)-this.predict(pel.y, bounce, pel.y)));
-			this.previousBounce = bounce;
+			while(this.conflicts(pel));
 			
 			pel.direction.y = bounce;
 			if (pel.bounces < 3) {
@@ -83,7 +77,16 @@ var MCP = {
 				pel.nextBounce = Infinity;
 			}
 			
-			//if (this.getNextBounce()-pel.nextBounce != 0) Cannon.Logger.log('Next bounce : '+(this.getNextBounce()-pel.nextBounce));
+		},
+		conflicts: function(pel){
+			var pels = Cannon.Utils.cloneArray(this.pels);
+			pels = Cannon.Utils.arrayWithout(pels, pel);
+			
+			for (var i = 0; i < pels.length; i++){
+				if (Math.abs(pels[i].nextBounce-pel.nextBounce) < 50) return true;
+			}
+			
+			return false;
 		},
 		predict: function(y, vy, limit){
 			//predicts the number of iterations before pel wil bounce again
