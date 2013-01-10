@@ -1,4 +1,4 @@
-var MCP = {
+var P3lEngine = {
 		running: false,
 		background: null,
 		canvas: null,
@@ -119,6 +119,6 @@ var P3l = Cannon.Display.Circle.extend({
 		this.bounces++;
 		this.y = limit;
 		
-		MCP.setBounceFactor(this);
+		P3lEngine.setBounceFactor(this);
 	},
 });

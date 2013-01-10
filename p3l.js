@@ -14,13 +14,13 @@ Cannon.onReady = function(){
 	Cannon.Logger.autolog('logs');
 	Cannon.use('*');
 	
-	Cannon.getScript('objects.js', function(){
-		MCP.background = background;
-		MCP.canvas = canvas;
-		MCP.scoreText = scoreText;
-		MCP.lifesObjects.push(l1);
-		MCP.lifesObjects.push(l2);
-		MCP.lifesObjects.push(l3);
+	Cannon.getScript('engine.js', function(){
+		P3lEngine.background = background;
+		P3lEngine.canvas = canvas;
+		P3lEngine.scoreText = scoreText;
+		P3lEngine.lifesObjects.push(l1);
+		P3lEngine.lifesObjects.push(l2);
+		P3lEngine.lifesObjects.push(l3);
 		
 		canvas.on('canvas:render', onRender);
 	});
@@ -102,7 +102,7 @@ Cannon.onReady = function(){
 	lastscore.fillStyle = new Color(0,0,0,0);
 	
 	canvas.on('canvas:click', function(){
-		if (!MCP.running){
+		if (!P3lEngine.running){
 			startGame()
 		}
 	});
@@ -116,11 +116,11 @@ Cannon.onReady = function(){
 };
 
 function startGame(){
-	MCP.level = 1;
-	MCP.score = 0;
-	MCP.lifes = 3;
-	MCP.running = true;
-	MCP.startSpawning();
+	P3lEngine.level = 1;
+	P3lEngine.score = 0;
+	P3lEngine.lifes = 3;
+	P3lEngine.running = true;
+	P3lEngine.startSpawning();
 	
 	var transparent = new Color(0,0,0,0);
 	
@@ -132,7 +132,7 @@ function startGame(){
 	Tween.create(titleText, {fillStyle: FADED_COLOR}, 500);
 	Tween.create(scoreText, {fillStyle: FADED_COLOR}, 500);
 	
-	for (var i = 0; i < MCP.lifesObjects.length; i++) MCP.lifesObjects[i].visible = true;
+	for (var i = 0; i < P3lEngine.lifesObjects.length; i++) P3lEngine.lifesObjects[i].visible = true;
 }
 
 function endGame(score){
@@ -152,17 +152,17 @@ function endGame(score){
 	Tween.create(lastscore, {fillStyle: TEXT_COLOR}, 500);
 	Tween.create(scoreText, {fillStyle: new Color(0,0,0,0)}, 500);
 	
-	for (var i = 0; i < MCP.lifesObjects.length; i++) MCP.lifesObjects[i].visible = false;
+	for (var i = 0; i < P3lEngine.lifesObjects.length; i++) P3lEngine.lifesObjects[i].visible = false;
 	
-	while (MCP.pels.length-1 > 0){//last pel will be removed later
-		MCP.removePel(MCP.pels[1]);
+	while (P3lEngine.pels.length-1 > 0){//last pel will be removed later
+		P3lEngine.removePel(P3lEngine.pels[1]);
 	}
 }
 
 function onRender(){
 	var removeMe = [];
-	for (var i = 0; i < MCP.pels.length; i++){
-		var pel = MCP.pels[i];
+	for (var i = 0; i < P3lEngine.pels.length; i++){
+		var pel = P3lEngine.pels[i];
 		pel.nextBounce--;
 		
 		pel.direction.y = Math.min(pel.direction.y+GRAVITY, PEL_MAX_SPEED);
@@ -174,7 +174,7 @@ function onRender(){
 			if (paddleCol === pel.bounces && pel.bounces < 3){
 				//bounces off paddle
 				pel.bounceOff(paddle.y);
-				MCP.bounced();
+				P3lEngine.bounced();
 				
 				Tween.create(paddle, {fillStyle: '#828389', strokeStyle: '#828389'}, 250, function(){
 					Tween.create(paddle, {fillStyle: '#4e4f53', strokeStyle: '#4e4f53'}, 250, 'easeOutQuint');
@@ -182,7 +182,7 @@ function onRender(){
 			}
 			else if (pel.bounces < 3){
 				//really lost a pel
-				MCP.lostOne();
+				P3lEngine.lostOne();
 				removeMe.push(pel);
 			}
 			else {
@@ -193,6 +193,6 @@ function onRender(){
 	}
 	
 	for (var i = 0; i < removeMe.length; i++){
-		MCP.removePel(removeMe[i]);
+		P3lEngine.removePel(removeMe[i]);
 	}
 }
