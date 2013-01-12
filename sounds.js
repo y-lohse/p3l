@@ -1,7 +1,7 @@
 var P3lSounds = {
 	duplicates: 5,
-	paddleSound: 0,
-	paddleSounds: [],
+	soundIndexes: [0, 0, 0, 0],
+	sounds: [[], [], [], []],
 	init: function(){
 		var audiotest = new Audio();
 		var format = (audiotest.canPlayType('audio/mpeg')) ? 'mp3' : 'wav';
@@ -9,24 +9,26 @@ var P3lSounds = {
 		var paddleSound = new Audio('sounds/paddle.'+format);
 		paddleSound.addEventListener('canplaythrough', Cannon.Utils.bind(function(){
 			for (var i = 0; i < this.duplicates; i++){
-				this.paddleSounds.push(new Audio(paddleSound.src));
+				this.sounds[3].push(new Audio(paddleSound.src));
 			}
 		}, this), false);
 		paddleSound.load();
 		
 		for (var i = 0; i < 3; i++){
 			var bounceSound = new Audio('sounds/'+i+'.'+format);
-			bounceSound.addEventListener('canplaythrough', Cannon.Utils.bind(function(){
-				for (var i = 0; i < this.duplicates; i++){
-					this.bounceSounds.push(new Audio('sounds/'+i+'.'+format));
+			bounceSound.addEventListener('canplaythrough', Cannon.Utils.bind(function(index){
+				for (var j = 0; j < this.duplicates; j++){
+					this.sounds[index].push(new Audio('sounds/'+index+'.'+format));
 				}
-			}, this), false);
+			}, this, i), false);
 			bounceSound.load();
 		}
 	},
 	playSound: function(sound){
-		this.paddleSounds[this.paddleSound].currentTime = 0;
-		this.paddleSounds[this.paddleSound].play();
-		if (++this.paddleSound >= this.duplicates) this.paddleSound = 0;
+		//sound = 1;
+		//Cannon.Logger.log(this.sounds[sound].length);
+		this.sounds[sound][this.soundIndexes[sound]].currentTime = 0;
+		this.sounds[sound][this.soundIndexes[sound]].play();
+		if (++this.soundIndexes[sound] >= this.duplicates) this.soundIndexes[sound] = 0;
 	}
 };

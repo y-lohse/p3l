@@ -113,11 +113,11 @@ Cannon.onReady = function(){
 	
 	canvas.on('canvas:keydown', function(event){
 		if (event.key === 'right' && paddleCol < 2){
-			P3lSounds.playSound();
+			P3lSounds.playSound(3);
 			paddle.x = PADDING+GUTTER_WIDTH*++paddleCol;
 		}
 		else if (event.key === 'left' && paddleCol > 0){
-			P3lSounds.playSound();
+			P3lSounds.playSound(3);
 			paddle.x = PADDING+GUTTER_WIDTH*--paddleCol;
 		}
 	});
@@ -181,6 +181,7 @@ function onRender(){
 		if (pel.y >= paddle.y){
 			if (paddleCol === pel.bounces && pel.bounces < 3){
 				//bounces off paddle
+				P3lSounds.playSound(pel.bounces);
 				pel.bounceOff(paddle.y);
 				P3lEngine.bounced();
 				
