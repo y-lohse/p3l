@@ -1,31 +1,30 @@
 var P3lSounds = {
-	loaded: false,
 	duplicates: 5,
-	paddleSound: null,
+	paddleSound: 0,
 	paddleSounds: [],
 	init: function(){
 		var audiotest = new Audio();
 		var format = (audiotest.canPlayType('audio/mpeg')) ? 'mp3' : 'wav';
 		
-		var loadingSet = new Cannon.LoadingSet(Cannon.Utils.bind(function(){
-			this.loaded = true;
-		}, this), 1);
-		
-		this.paddleSound = new Audio('sounds/0.'+format);
-		loadingSet.add(this.paddleSound);
-		this.paddleSound.addEventListener('canplaythrough', Cannon.Utils.bind(function(){
-			loadingSet.ready(this.paddleSound);
-			
+		var paddleSound = new Audio('sounds/paddle.'+format);
+		paddleSound.addEventListener('canplaythrough', Cannon.Utils.bind(function(){
 			for (var i = 0; i < this.duplicates; i++){
-				this.paddleSounds.push(new Audio('sounds/0.'+format));
+				this.paddleSounds.push(new Audio(paddleSound.src));
 			}
-			this.paddleSound = 0;
 		}, this), false);
-		this.paddleSound.load();
+		paddleSound.load();
+		
+		for (var i = 0; i < 3; i++){
+			var bounceSound = new Audio('sounds/'+i+'.'+format);
+			bounceSound.addEventListener('canplaythrough', Cannon.Utils.bind(function(){
+				for (var i = 0; i < this.duplicates; i++){
+					this.bounceSounds.push(new Audio('sounds/'+i+'.'+format));
+				}
+			}, this), false);
+			bounceSound.load();
+		}
 	},
 	playSound: function(sound){
-		if (!this.loaded) return;
-		
 		this.paddleSounds[this.paddleSound].currentTime = 0;
 		this.paddleSounds[this.paddleSound].play();
 		if (++this.paddleSound >= this.duplicates) this.paddleSound = 0;
