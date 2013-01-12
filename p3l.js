@@ -191,6 +191,7 @@ function onRender(){
 			}
 			else if (pel.bounces < 3){
 				//really lost a pel
+				P3lSounds.playSound(4);
 				P3lEngine.lostOne();
 				removeMe.push(pel);
 			}
