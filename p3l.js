@@ -15,6 +15,9 @@ Cannon.onReady = function(){
 	Cannon.Logger.autolog('logs');
 	Cannon.use('*');
 	
+	Cannon.getScript('sounds.js', function(){
+		P3lSounds.init();
+	});
 	Cannon.getScript('engine.js', function(){
 		P3lEngine.background = background;
 		P3lEngine.canvas = canvas;
@@ -174,6 +177,8 @@ function onRender(){
 		if (pel.y >= paddle.y){
 			if (paddleCol === pel.bounces && pel.bounces < 3){
 				//bounces off paddle
+				P3lSounds.playSound();
+				
 				pel.bounceOff(paddle.y);
 				P3lEngine.bounced();
 				
