@@ -6,11 +6,12 @@ var canvas, paddle, paddleCol = 0;
 var GRAVITY = .2, 
 	GUTTER_WIDTH = 100,
 	PADDING = 25,
-	PEL_MAX_SPEED = 7,
+	PEL_MAX_SPEED = 8,
 	TEXT_COLOR = '#76777d',
 	FADED_COLOR = '#babbc1';
 
 Cannon.onReady = function(){
+	Cannon.Logger.maxlog = 20;
 	Cannon.Logger.autolog('logs');
 	Cannon.use('*');
 	

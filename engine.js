@@ -9,9 +9,10 @@ var P3lEngine = {
 		level: 1,
 		score: 0,
 		bounces: 0,
-		bounceFactors: [-7, -10, -13],
-		previousBounce: 0,
 		timeout: null,
+		maxDelay: 7000,
+		minDelay: 1500,
+		minSeparation: 30,
 		bounced: function(){
 			this.bounces++;
 			this.level++;
@@ -37,20 +38,14 @@ var P3lEngine = {
 		},
 		startSpawning: function(){
 			this.spawnPel();
-			var nextPel = Math.max((-5500/19 * (this.level-1) + 7000), 1500);
+			var nextPel = Math.max(((this.minDelay-this.maxDelay)/19 * (this.level-1) + this.maxDelay), this.minDelay);
+			nextPel += Cannon.Math.Utils.randomIn(-500, 500);
 			
 			this.timeout = setTimeout(Cannon.Utils.bind(this.startSpawning, this), nextPel);
 		},
 		spawnPel: function(){
-			var pel = new P3l(-25, 100);
-			
-			do{
-				pel.y -= 10;
-				pel.nextBounce = this.predict(pel.y, pel.direction.y, paddle.y);
-			}
-			while (this.conflicts(pel));
-			
-			pel.direction.x = GUTTER_WIDTH/pel.nextBounce;
+			var pel = new P3l(-25, paddle.y);
+			this.setBounceFactor(pel);
 			
 			this.canvas.addChild(pel);
 			this.pels.push(pel);
@@ -63,10 +58,15 @@ var P3lEngine = {
 			var bounce;
 			var counter = 0;
 			do{
-				bounce = Cannon.Math.Utils.randomIn(-13, -7);
+				bounce = Cannon.Math.Utils.randomIn(-13, -9);
 				pel.nextBounce = this.predict(pel.y, bounce, pel.y);
 			}
-			while(this.conflicts(pel) && ++counter < 200);
+			while(this.conflicts(pel) && ++counter <= 100);
+			
+			if (counter >= 100){
+				bounce = bounce = Cannon.Math.Utils.randomIn(-9, -7);;
+				pel.nextBounce = this.predict(pel.y, bounce, pel.y);
+			}
 			
 			pel.direction.y = bounce;
 			if (pel.bounces < 3) {
@@ -83,7 +83,7 @@ var P3lEngine = {
 			pels = Cannon.Utils.arrayWithout(pels, pel);
 			
 			for (var i = 0; i < pels.length; i++){
-				if (Math.abs(pels[i].nextBounce-pel.nextBounce) < 30) return true;
+				if (Math.abs(pels[i].nextBounce-pel.nextBounce) < this.minSeparation) return true;
 			}
 			
 			return false;
