@@ -14,12 +14,11 @@ var P3lEngine = {
 		minDelay: 1500,
 		minSeparation: 30,
 		bounced: function(){
-			this.score += this.level*2;
+			this.score += Math.pow(2, this.level);
 			this.scoreText.text = this.score;
 			
 			this.bounces++;
 			this.level = Math.round(Math.log(this.bounces)/Math.LN2)+1;
-			Cannon.Logger.log(this.level);
 			
 			if (this.scoreText.getWidth() > this.canvas.width) this.scoreText.fontSize -= 5;
 			this.scoreText.x = this.canvas.width/2 - this.scoreText.getWidth()/2;
@@ -39,7 +38,7 @@ var P3lEngine = {
 		},
 		startSpawning: function(){
 			this.spawnPel();
-			var nextPel = Math.max(((this.minDelay-this.maxDelay)/9 * (this.level-1) + this.maxDelay), this.minDelay);
+			var nextPel = Math.max(((this.minDelay-this.maxDelay)/6 * (this.level-1) + this.maxDelay), this.minDelay);
 			nextPel += Cannon.Math.Utils.randomIn(-500, 500);
 			
 			this.timeout = setTimeout(Cannon.Utils.bind(this.startSpawning, this), nextPel);

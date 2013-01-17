@@ -126,6 +126,7 @@ Cannon.onReady = function(){
 function startGame(){
 	P3lEngine.level = 1;
 	P3lEngine.score = 0;
+	P3lEngine.bounces = 0;
 	P3lEngine.lifes = 3;
 	P3lEngine.running = true;
 	P3lEngine.startSpawning();
